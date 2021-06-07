@@ -1,0 +1,119 @@
+
+body {
+    background: url(https://media-exp1.licdn.com/dms/image/C4D1BAQFVsQV4LYKL9g/company-background_10000/0/1519801288089?e=2159024400&v=beta&t=YRbjsp-ZUD8_NBQYaHMuyshE4ZS4X5ZvTLAc2rKxRoo) 0 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.loginComponents {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 320px;
+    height: 420px;
+    background: rgba(34, 34, 34, 0.925);
+    padding: 20px;
+    border-radius: 18px;
+}
+
+.loginLogo {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    position: absolute;
+    top: -60px;
+    left: calc(50% - 60px);
+    background: rgba(90, 90, 90, 0.884);
+
+}
+
+
+.loginComponents h1 {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    padding-bottom: 30px;
+}
+
+.loginComponents input {
+    width: 100%;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    outline: none;
+    height: 40px;
+    font-size: 16px;
+    color: white;
+}
+
+.loginComponents button {
+    width: 100%;
+    border: none;
+    margin-top: 30px;
+    height: 40px;
+    outline: 40px;
+    background: #3964b6;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    border-radius: 20px;
+}
+
+.loginComponents button:hover {
+    cursor: pointer;
+    background: #ffc107;
+    color: #000;
+}
+
+.loginComponents a {
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 20px;
+    color: rgb(212, 212, 212);
+    bottom: 8px;
+    right: 8px;
+    position: absolute;
+
+}
+
+.loginComponents a:hover {
+    color: #ffc107;
+    font-size: 15px;
+    transition: 0.5s;
+}
+
+.loginBackground {
+    background: url(https://media-exp1.licdn.com/dms/image/C4D1BAQFVsQV4LYKL9g/company-background_10000/0/1519801288089?e=2159024400&v=beta&t=YRbjsp-ZUD8_NBQYaHMuyshE4ZS4X5ZvTLAc2rKxRoo) 0 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+::placeholder {
+    color:white;
+    opacity: 0.6;
+}
+
+.loginFormInvalid {
+    text-align: center;
+    border-radius: 10px;
+    margin-top: -40px;
+    background: rgba(236, 0, 0, 0.658);
+    font-size: 15px;
+    padding: 5px;
+    color: white;
+}
+
+.formInputError {
+    color: red;
+    position: relative;
+    margin-bottom: -5px;
+    width: 200px;
+}

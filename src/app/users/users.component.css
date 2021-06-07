@@ -1,0 +1,115 @@
+body {
+    background: rgb(48, 48, 48);
+}
+
+.page-title{
+    border-radius: 0px 0px 10px 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.404);
+    color: white;
+}
+
+.btn-common-style{
+    border: none;
+    text-align: center;
+    width: 80px;
+    margin-top: 50px;
+}
+
+.btn-add-user{
+    margin-bottom: 50px;
+    margin-top: 20px;
+}
+
+.btn-edit-delete {
+    width: 100px;
+    height: 30px;
+    padding: 0px;
+}
+
+.btn-delete{
+    float: right;
+    position: relative;
+}
+
+.card-top-custom{
+    height: 60px;
+    width: auto;
+    background-color: rgb(250, 125, 8);
+    border-radius: 4px 4px 0px 0px;
+}
+
+.dark-modal .modal-content {
+    background-color: #292b2c;
+    color: white;
+  }
+.dark-modal .close {
+color: white;
+}
+.light-blue-backdrop {
+background-color: #5cb3fd;
+}
+
+.modal-custom{
+    background: rgb(61, 61, 61);
+}
+
+
+.close-container{
+    position: relative;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    margin-left: auto; 
+    margin-right: 0;
+}
+
+.leftright{
+    height: 4px;
+    width: 35px;
+    position: absolute;
+    margin-top: 24px;
+    background-color: #F4A259;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    transition: all .3s ease-in;
+}
+
+.rightleft{
+    height: 4px;
+    width: 35px;
+    position: absolute;
+    margin-top: 24px;
+    background-color: #F4A259;
+    border-radius: 2px;
+    transform: rotate(-45deg);
+    transition: all .3s ease-in;
+}
+
+.x-label{
+    color: white;
+    font-family: Helvetica, Arial, sans-serif; 
+    font-size: .6em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all .3s ease-in;
+    opacity: 0;
+    margin-right: 5px;
+}
+.close{
+    margin: 40px 0 0 0px;
+  
+}
+
+.close-container:hover .leftright{
+    transform: rotate(-45deg);
+    background-color: #F25C66;
+}
+.close-container:hover .rightleft{
+    transform: rotate(45deg);
+    background-color:#F25C66;
+}
+.close-container:hover .x-label{
+    opacity: 1;
+}
