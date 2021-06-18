@@ -17,8 +17,9 @@
   - a user has to login using email and password
 
 # Screenshots
-1 - 
-https://github.com/DFEduard/F5-PROJECT-FRONTEND/blob/master/Project%20screenshots/1%20login.png
+![GitHub Logo](https://github.com/DFEduard/F5-PROJECT-FRONTEND/blob/master/Project%20screenshots/1%20login.png)
+Format: ![Alt Text](url)
+
 
 # UsersModule
 
