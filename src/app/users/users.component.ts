@@ -1,6 +1,8 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ApiService} from '../services/api.services';
+import {User} from '../classes/user';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -10,145 +12,278 @@ import { NgbModal} from '@ng-bootstrap/ng-bootstrap';
   encapsulation: ViewEncapsulation.None
 })
 export class UsersComponent implements OnInit {
-
-  defaultUser = {
-    "name": "John Doe",
-    "title": "Full Stack Developer",
-    "country": "Bay Area, San Francisco, CA",
-    "email": "eduard94@gmail.com"
-  }
-
-  user1 = {
-    "name": "Eduard",
-    "title": "Software Engineer",
-    "country": "Romania",
-    "email": "eduard94@gmail.com"
-  }
-  user2 = {
-    "name": "Robert",
-    "title": "Web Developer",
-    "country": "Romania",
-    "email": "robert@gmail.com"
-  }
-  user3 = {
-    "name": "Bianca",
-    "title": "Public relationship",
-    "country": "Romania",
-    "email": "bianca@gmail.com"
-  }
-  user4 = {
-    "name": "User 4",
-    "title": "Test",
-    "country": "Romania",
-    "email": "user4@gmail.com"
-  }
-
+  defaultUserPic = "./assets/User-Icon.ico"
+  logoutRedirectUrl = "/login"
+  // IDs for form
   inputNameID = "inputName"
   inputPasswordID = "inputPassword"
   inputEmailID = "inputEmail"
   inputTitleID = "inputTitle"
   inputCountryID = "inputCountry"
 
-  public userCards = [this.defaultUser, this.user1, this.user2, this.user3]
-
-  closeResult!: string;
+  // variables for to save the form input 
   inputNameValue: string = "";
   inputEmailValue: string = "";
   inputTitleValue: string = "";
   inputPasswordValue: string = "";
   inputCountryValue: string = "";
-  modalBtnText = "Create"
-  modalBtnCreate = true;
-  selectedCardIndex = -1;
 
-  constructor(private modalService: NgbModal) {
+  closeResult!: string;
+  emailErrorMsg!: string;
+  passwordErrorMsg!: string;
+  fieldFormClass = {
+    "email": {
+      "is-invalid": false,
+      "form-control": true
+    },
+    "password": {
+      "is-invalid": false,
+      "form-control": true
+    },
+    "name": {
+      "is-invalid": false,
+      "form-control": true
+    },
+    "title": {
+      "is-invalid": false,
+      "form-control": true
+    },
+    "country": {
+      "is-invalid": false,
+      "form-control": true
+    }
+    
+  }
+ 
+  // used to disbale password field when edit a user
+  passwordIsDisabled = false;
+
+  //used to change the modal based on the action
+  modalBtnCreate = true;
+  private modalBtnStateSave = "Save";
+  private modalBtnStateCreate ="Create";
+  modalBtnText = this.modalBtnStateCreate;
+
+  // used to display an error message if the admin user gets deleted
+  deleteModalErrorMsg = ""
+  
+  lstUsers!:User[];
+  savedlstUserIndex: number = -1;
+
+  // Useit to print the API results
+  private DEBUG_API_RESPONSE = false;
+
+  constructor(private modalService: NgbModal, private apiService: ApiService, private router: Router) {
 
   }
 
   ngOnInit(): void {
-    console.log(this.userCards)
+    // get all users from backend 
+    this.apiService.getUsers().subscribe(
+      data => {
+        this.lstUsers = data
+
+        this.debugAPI(data, "SUCCESS: API get users")
+      },
+      error => {
+        this.debugAPI(error, "ERROR: API get users")
+      }
+    );
   }
 
+  // function to open a modal
   openModal(content) {
     this.modalService.open(content, { centered: true });
   }
 
+  // used to open a modal to add a user
   addUser(content){
-      // this.userCards.push(this.user4);
-      // console.log(userCard)
+
+      this.clearFormError()
       this.openModal(content)
-      this.modalBtnText = "Create"
-      this.inputNameValue = ""
-      this.inputTitleValue = ""
-      this.inputCountryValue = ""
-      this.inputNameValue = ""
-      this.inputEmailValue = ""
+      this.userFormFields()
   }
 
-  deleteUser(index:string){
-    let i = parseInt(index)
-    if (i > -1){
-      this.userCards.splice(i,1)
-    }
-    console.log(index)
+  // used to open a modal to edit a user
+  openToEditUser(id:string, content){
+
+    this.clearFormError()
+    this.userSelector(id)
+    this.userFormFields(this.lstUsers[this.savedlstUserIndex], false)
+    this.openModal(content)
   }
 
-  
-  createUser(){
+  createSaveUser(){
     // get user data
-    this.inputNameValue = this.getElementValue(this.inputNameID)
-    this.inputEmailValue = this.getElementValue(this.inputEmailID)
-    this.inputPasswordValue = this.getElementValue(this.inputPasswordID)
-    this.inputTitleValue = this.getElementValue(this.inputTitleID)
-    this.inputCountryValue = this.getElementValue(this.inputCountryID)
+    this.inputNameValue = this.getElementValue(this.inputNameID);
+    this.inputEmailValue = this.getElementValue(this.inputEmailID);
+    this.inputPasswordValue = this.getElementValue(this.inputPasswordID);
+    this.inputTitleValue = this.getElementValue(this.inputTitleID);
+    this.inputCountryValue = this.getElementValue(this.inputCountryID);
+
+
 
     // check btn state from modal
-    if (this.modalBtnText == "Create"){
+    if (this.modalBtnText == this.modalBtnStateCreate){
       // create new user
-      let userObj = {
+      let user: User = new User();
+      user.email = this.inputEmailValue;
+      user.password = this.inputPasswordValue;
+      user.name = this.inputNameValue;
+      user.country = this.inputCountryValue;
+      user.title = this.inputTitleValue;
+
+      this.apiService.postUsers(user).subscribe(
+        data => {
+          
+          this.lstUsers.push(data);
+          this.modalService.dismissAll();
+
+          this.debugAPI(data, "SUCCESS: API create user")
+        },
+        error => {
+          this.formError(error)
+
+          this.debugAPI(error, "ERROR: API create user");
+        }
+      )
+
+    }
+    else if(this.modalBtnText == this.modalBtnStateSave) {
+      // save edited user
+      let body = {
         "name": this.inputNameValue,
+        "email": this.inputEmailValue,
         "title": this.inputTitleValue,
-        "country": this.inputCountryValue,
-        "email": this.inputEmailValue
+        "country": this.inputCountryValue
+      };
+        let userID = this.lstUsers[this.savedlstUserIndex].userID;
+        this.apiService.editUser(userID.toString(), body).subscribe(
+          (data) => {
+              this.lstUsers[this.savedlstUserIndex] = data;
+              console.log(data)
+              this.savedlstUserIndex = -1;
+              this.modalService.dismissAll();
+              this.debugAPI(data, "SUCCESS: API edit user")
+          },
+          (error) => {
+              this.formError(error)
+
+              this.debugAPI(error, "ERROR: API edit user")
+          }
+        );
+    };
+  }
+
+  deleteUser(id:string, deleteModal){
+    this.userSelector(id);
+
+    this.apiService.deleteUser(id).subscribe(
+      (data) => {
+        // remove user from the list
+        this.lstUsers.splice(this.savedlstUserIndex)
+        this.savedlstUserIndex = -1;
+
+        this.debugAPI(data, "SUCCESS: API delete user")
+      },
+      (errorRes) => {
+        this.deleteModalErrorMsg = errorRes.error.error;
+        this.openModal(deleteModal)
+
+        this.debugAPI(errorRes, "ERROR: API delete user")
       }
-      // add user to card
-      this.userCards.push(userObj)
-    }
-    else if(this.modalBtnText == "Save") {
-      // save changes
-        this.userCards[this.selectedCardIndex].name = this.inputNameValue
-        this.userCards[this.selectedCardIndex].title = this.inputTitleValue
-        this.userCards[this.selectedCardIndex].country = this.inputCountryValue
-
-        
-        console.log("edited")
-        console.log(this.userCards[this.selectedCardIndex])
-        this.selectedCardIndex = -1
-    }
-
-    console.log(this.inputNameValue, this.inputEmailValue, this.inputPasswordValue, this.inputTitleValue, this.inputCountryValue)
-    this.modalService.dismissAll()
-    
+    )
   }
 
-  editUser(index:string, content){
-    this.selectedCardIndex = parseInt(index)
-    let card
-
-    if (this.selectedCardIndex > -1){
-      card = this.userCards[this.selectedCardIndex]
-    }
-    this.modalBtnText = "Save"
-    this.inputNameValue = card.name
-    this.inputTitleValue = card.title
-    this.inputCountryValue = card.country
-    this.openModal(content)
-    console.log("edit user")
+  logout(){
+    localStorage.removeItem('accessTk')
+    localStorage.removeItem('refreshTk')
+    this.router.navigate([this.logoutRedirectUrl])
   }
 
-
+  // get the value of a html input 
   getElementValue(name:string){
     return (<HTMLInputElement>document.getElementById(name)).value;
+  }
+
+  // used to clear or to populate the modal used to add or edit a user
+  private userFormFields(user: User = new User(), clear: boolean= true){
+    if (!clear){
+      this.modalBtnText = this.modalBtnStateSave
+      this.passwordIsDisabled = true;
+    }
+    else{
+      this.modalBtnText = this.modalBtnStateCreate
+      this.passwordIsDisabled = false;
+    }
+      this.inputEmailValue = user.email
+      this.inputPasswordValue = user.password
+      this.inputNameValue = user.name
+      this.inputTitleValue = user.title
+      this.inputCountryValue = user.country
+  }
+
+  private userSelector(id:string){
+    // save the index of the user from the list - used for edit 
+    for (var i=0; i < this.lstUsers.length; i++){
+
+      if (this.lstUsers[i].userID.toString() == id){
+        this.savedlstUserIndex = i;
+        break;
+      }
+
+    }
+  }
+
+  private formError(error){
+    this.clearFormError()
+
+      this.fieldFormClass.email['is-invalid'] = !!error.error.email;
+      this.fieldFormClass.password['is-invalid'] = !!error.error.password;
+      this.fieldFormClass.name['is-invalid'] = !!error.error.name
+      this.fieldFormClass.title['is-invalid'] = !!error.error.title;
+      this.fieldFormClass.country['is-invalid'] = !!error.error.country;
+
+      if(!!error.error.error){
+        this.emailErrorMsg = error.error.error
+
+        if(!!error.error.error.email){
+          this.emailErrorMsg = error.error.error.email
+        }
+      }
+
+      
+      
+
+      if(!!error.error.error.password){
+        this.passwordErrorMsg = error.error.error.password
+      }
+  }
+
+  private clearFormError(){
+    // clear error messages
+    this.emailErrorMsg = "";
+    this.passwordErrorMsg = "";
+
+    this.fieldFormClass.email['is-invalid'] = false;
+    this.fieldFormClass.password['is-invalid'] = false;
+    this.fieldFormClass.name['is-invalid'] = false;
+    this.fieldFormClass.title['is-invalid'] = false;
+    this.fieldFormClass.country['is-invalid'] = false;
+  }
+
+  // used to print API responses 
+  private debugAPI(data, info:string = ""){
+    if (this.DEBUG_API_RESPONSE){
+      if (info != "")
+      {
+        console.log(info, data)
+      }
+      else{
+        console.log("Console debug enabled:",data)
+      }
+        
+    }
   }
 
 }

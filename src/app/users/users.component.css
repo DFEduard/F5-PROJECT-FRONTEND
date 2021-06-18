@@ -39,6 +39,10 @@ body {
     border-radius: 4px 4px 0px 0px;
 }
 
+.card-body{
+    height: 185px;
+}
+
 .dark-modal .modal-content {
     background-color: #292b2c;
     color: white;
@@ -112,4 +116,14 @@ background-color: #5cb3fd;
 }
 .close-container:hover .x-label{
     opacity: 1;
+}
+
+.delete-msg{
+    text-align: center;
+    color: white;
+}
+
+.btn-logout{
+    position: absolute;
+    right: auto;
 }

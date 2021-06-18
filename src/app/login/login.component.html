@@ -3,8 +3,10 @@
     <h1>Login</h1>
     <input #emailInput type="email" placeholder="Email">
     <input #passwordInput type="password" placeholder="Password">
+
+    <div  class="alert-danger custom-error">
+        {{errorMessage}}
+      </div>
     <button (click)="loginButton(emailInput.value,passwordInput.value)">Login</button>
     <a href="#">Lost your password?</a>
 </div>
-
-<!-- <router-outlet></router-outlet> -->

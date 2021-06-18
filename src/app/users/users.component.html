@@ -1,33 +1,37 @@
 
 <div class="container bootstrap snippets bootdey">
+
   <div class="header">
     <h3 class="text-muted prj-name">
-        <span class="fa fa-users fa-2x"></span>
-        <span class="page-title"> Users </span>
+        <div class="d-flex justify-content-end" >
+          <span class="fa fa-users fa-2x"></span>
+          <span class="page-title"> Users </span>
+          <div class="p-2"><button type="button" (click)="logout()" class="btn btn-primary float-right">Logout</button></div>
+        </div>
     </h3>
   </div>
+
   <div class="d-grid gap-2 col-6 mx-auto">
     <button type="button" (click)="addUser(content)" class="btn btn-primary btn-lg btn-add-user">Add user</button>
   </div>
   
   <div class="container">
     <div class="main-body">
-    
           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 gutters-sm">
             <!-- USER CARDS -->
-            <div *ngFor="let userCard of userCards; index as i" class="col mb-3">
-              <div #test id={{i}} class="card">
+            <div *ngFor="let userCard of lstUsers" class="col mb-3">
+              <div #uCard id="{{userCard['userID']}}" class="card">
                 <div class=card-top-custom></div>
                 <div class="card-body text-center">
-                  <img src="https://bootdey.com/img/Content/avatar/avatar1.png" style="width:100px;margin-top:-65px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                  <img src="{{defaultUserPic}}" style="width:100px;margin-top:-65px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
                   <h5 class="card-title" id="card-name">{{userCard['name']}}</h5>
                   <p class="text-muted font-size-sm">{{userCard['email']}}</p>
                   <p class="text-secondary mb-1" id="card-title">{{userCard['title']}}</p>
                   <p class="text-muted font-size-sm" id="card-country">{{userCard['country']}}</p>
                 </div>
                 <div class="card-footer">
-                    <button type="button" (click)="editUser(test.id, content)" class="btn btn-outline-success btn-edit btn-edit-delete">Edit</button>
-                    <button type="button" (click)="deleteUser(test.id)" class="btn btn-outline-danger btn-delete btn-edit-delete">Delete</button>
+                    <button type="button" (click)="openToEditUser(uCard.id, content)" class="btn btn-outline-success btn-edit btn-edit-delete">Edit</button>
+                    <button type="button" (click)="deleteUser(uCard.id, deleteModal)" class="btn btn-outline-danger btn-delete btn-edit-delete">Delete</button>
                 </div>
               </div>
             </div>
@@ -38,42 +42,55 @@
 
   <!-- MODAL add or edit user -->
 <ng-template #content let-modal>
-      <form class="form-floating modal-custom" (submit)="createUser()">
+      <form class="form-floating modal-custom">
           <div  (click)="modal.close('Close click')" class="close-container">
               <div class="leftright"></div>
               <div class="rightleft"></div>
               <label class="close x-label">close</label>
             </div>
-          
+      
+        <div  class="alert-danger custom-error">
+          {{emailErrorMsg}}
+        </div>
       <div class="form-floating mb-3">
-          <input type="email" class="form-control" id="{{inputEmailID}}" placeholder="name@example.com" value="{{inputEmailValue}}">
+          <input type="email" [ngClass]="fieldFormClass.email" id="{{inputEmailID}}" placeholder="name@example.com" value="{{inputEmailValue}}">
           <label for="floatingInput">Email address</label>
       </div>
+      <div  class="alert-danger custom-error">
+        {{passwordErrorMsg}}
+      </div>
       <div class="form-floating mb-3">
-          <input type="password" class="form-control" id="{{inputPasswordID}}" placeholder="Password" value="{{inputPasswordValue}}">
+          <input type="password" [ngClass]="fieldFormClass.password" id="{{inputPasswordID}}" placeholder="Password" value="{{inputPasswordValue}}" [disabled]="passwordIsDisabled" >
           <label for="floatingPassword">Password</label>
       </div>
       <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="{{inputNameID}}" placeholder="Name" value="{{inputNameValue}}">
+          <input type="text" [ngClass]="fieldFormClass.name" id="{{inputNameID}}" placeholder="Name" value="{{inputNameValue}}">
           <label for="floatingPassword">Name</label>
       </div>
       <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="{{inputTitleID}}" placeholder="Title" value="{{inputTitleValue}}">
+          <input type="text"[ngClass]="fieldFormClass.title" id="{{inputTitleID}}" placeholder="Title" value="{{inputTitleValue}}">
           <label for="floatingPassword">Title</label>
       </div>
       <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="{{inputCountryID}}" placeholder="Country" value="{{inputCountryValue}}">
+          <input type="text" [ngClass]="fieldFormClass.country" id="{{inputCountryID}}" placeholder="Country" value="{{inputCountryValue}}">
           <label for="floatingPassword">Country</label>
       </div>
-      <div class="form-floating mb-3">
-          <input type="email" class="form-control is-invalid" id="floatingInputInvalid" placeholder="name@example.com" value="test@example.com">
-          <label for="floatingInputInvalid">Test</label>
-      </div>
       <div class="d-grid gap-2 col-6 mx-auto mb-3">
-          <button type="submit" class="btn btn-primary" (click)="createUser()" type="button">{{modalBtnText}}</button>
+          <button type="submit" class="btn btn-primary" (click)="createSaveUser()" type="button">{{modalBtnText}}</button>
       </div>
   </form>
 
 </ng-template>
+
+<ng-template #deleteModal let-modal>
+  <form class="form-floating modal-custom">
+    <div  (click)="modal.close('Close click')" class="close-container">
+        <div class="leftright"></div>
+        <div class="rightleft"></div>
+        <label class="close x-label">close</label>
+      </div>
+      <div class="delete-msg"><h1>{{deleteModalErrorMsg}}</h1></div>
+  </form>
+</ng-template>
+
           
-        <!-- <button type="button" (click)="openDialog()" class="btn btn-primary btn-lg btn-add-user">Add user</button> -->
