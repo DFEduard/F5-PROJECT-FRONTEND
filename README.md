@@ -1,3 +1,20 @@
+# F5 PROJECT Fron-End
+- client side: HTML, Angular
+- layout: CSS, Bootstrap
+
+# Web app includes:
+  - Login page -> authentication required: email, password
+    - Users can't navigate to 'users' page if is not logged in 
+  - Users pages -> CRUD operations. 
+    - Logout button. When a user logs out, he needs to log back in to access back the 'users' page
+    - If the first access token expires (lifetime 5 mine), by using the refresh token a new access token will be created (lifetime 24 hours)
+    - If the second access token expires the user has to log back in. 
+    - There is an admin user that can't be delete. 
+  
+
+# Login page
+  - a user has to login using email and password
+
 # UsersModule
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.3.
